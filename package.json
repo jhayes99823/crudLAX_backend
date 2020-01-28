@@ -1,11 +1,26 @@
 {
   "name": "back_end",
   "version": "1.0.0",
-  "description": "CSSE 333 Final Project c.r.u.dLAX Project",
+  "description": "",
   "main": "index.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "tedious": "^8.0.1",
+    "body-parser": "^1.19.0",
+    "mssql": "^6.0.1"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Jordan Hayes",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhayes99823/crudLAX_backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jhayes99823/crudLAX_backend/issues"
+  },
+  "homepage": "https://github.com/jhayes99823/crudLAX_backend#readme"
 }
