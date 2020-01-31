@@ -2,7 +2,8 @@ const PORT = 5000;
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const routes = require('./routes/index');
+const userRoutes = require('./routes/user.routes');
+const teamRoutes = require('./routes/team.routes');
 const cors = require('cors');
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(function(req, res, next) {
     next();
   });
 
-app.use("/api", routes);
+app.use("/api", userRoutes);
+app.use("/api", teamRoutes);
 
 app.listen(PORT, () => { console.log("CRUDLAX Back End RUNNING") });
