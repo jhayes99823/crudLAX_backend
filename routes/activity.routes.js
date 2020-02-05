@@ -3,6 +3,7 @@ var router = express.Router();
 
 const { poolPromise, sql } =require('../db')
 
+//create pracctice 
 router.post('/activity/create/practice', async(req, res, next) => {
     const activity = req.body.activity;
     const pool = await poolPromise;
@@ -21,6 +22,8 @@ router.post('/activity/create/practice', async(req, res, next) => {
                         res.end(JSON.stringify({ success: false, ErrorCode: result.returnVal}))
                     }
 })
+
+//create game 
 
 router.post('/activity/create/game', async(req, res, next) => {
     const activity = req.body.activity;
@@ -44,6 +47,7 @@ router.post('/activity/create/game', async(req, res, next) => {
                     }
 })
 
+//delete game 
 router.delete('/activity/game', async(req, res, next) => {
     const pool = await poolPromise;
     console.log(req.query);
@@ -59,6 +63,7 @@ router.delete('/activity/game', async(req, res, next) => {
     }
 })
 
+//delete practice 
 router.delete('/activity/practice', async(req, res, next) => {
     const pool = await poolPromise;
     console.log(req.query);
@@ -74,5 +79,66 @@ router.delete('/activity/practice', async(req, res, next) => {
     }
 })
 
+//update practice 
+//(@id int, @win varchar(30) = null, @score int=null, @team1 varchar(30)=null, @oppScore int=null)
+router.post('/activity/practice', async(req, res, next) => {
+    const pool = await poolPromise;
+    console.log(req.query);
+    const res2 = await pool.request()
+                    .input('id', sql.Int, req.query.id)
+                    .input('win', sql.VarChar(30), req.query.win)
+                    .input('score', sql.Int, req.query.score)
+                    .input('team1', sql.VarChar(30), req.query.team1)
+                    .input('oppScore'.sql.Int, req.query.oppScore)
+                    .execute('updatePractice')
+    if (res2.returnVal > 0) {
+        res.end(JSON.stringify({ success: true }))
+    } else {
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
+    }
+})
 
+
+//update activity 
+//@id int, @activityDate date = null,  @location varchar(30)=null, @startTime time=null, @endTime time = null, @CoachID int, @TeamID int, @Name varchar(30) 
+router.post('/activity/practice', async(req, res, next) => {
+    const pool = await poolPromise;
+    console.log(req.query);
+    const res2 = await pool.request()
+                    .input('id', sql.Int, req.query.id)
+                    .input('date', sql.Date, req.query.date)
+                    .input('location', sql.VarChar(30), req.query.location)
+                    .input('startTIme', sql.Time, req.query.startTime)
+                    .input('endTime'.sql.Time, req.query.endTime)
+                    .input('CoachID'.sql.Int, req.query.CoachID)
+                    .input('TeamID'.sql.Int, req.query.TeamID)
+                    .input('Name', sql.VarChar(30), req.query.name)
+                    .execute('updateActivity')
+    if (res2.returnVal > 0) {
+        res.end(JSON.stringify({ success: true }))
+    } else {
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
+    }
+})
+
+
+//update game 
+//@id int, @win varchar(30) = null, @score int=null, @team1 varchar(30)=null, @oppScore int=null)
+
+router.post('/activity/game', async(req, res, next) => {
+    const pool = await poolPromise;
+    console.log(req.query);
+    const res2 = await pool.request()
+                    .input('id', sql.Int, req.query.id)
+                    .input('win', sql.VarChar(30), req.query.win)
+                    .input('score', sql.Int, req.query.score)
+                    .input('team1', sql.VarChar(30), req.query.VarChar(30)
+                    .input('oppScore', sql.Int, req.query.oppScore)
+                    .execute('updateGame'))
+    if (res2.returnVal > 0) {
+        res.end(JSON.stringify({ success: true }))
+    } else {
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
+    }
+})
 module.exports = router;
