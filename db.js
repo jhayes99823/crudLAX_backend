@@ -1,8 +1,8 @@
 const sql = require('mssql')
 
 const config = {
-    user: 'ravellp',
-    password: 'Pavani23',
+    user: 'hayesja1',
+    password: 'Password123',
     server: "golem.csse.rose-hulman.edu",
     database: 'crudLAX20',
     port: 1433

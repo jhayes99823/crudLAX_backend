@@ -41,7 +41,6 @@ router.get('/teams', async(req, res, next) => {
 
 router.delete('/teams', async(req, res, next) => {
     const pool = await poolPromise;
-    console.log(req.query);
     const res2 = await pool.request()
                     .input('tid', sql.Int, req.query.tid)
                     .execute('deleteTeam')
