@@ -3,6 +3,19 @@ var router = express.Router();
 
 const { poolPromise, sql } =require('../db')
 
+router.get('/activity', async(req, res, next) => {
+    const pool = await poolPromise;
+    const result = await pool.request()
+                    .input('coachUName', sql.VarChar(30), req.query.username)
+                    .query('SELECT * FROM [dbo].[getActivityByCoachUserName] (@coachUName)')
+                    
+                    if (result.recordset.length > 0) {
+                        res.end(JSON.stringify({ success: true, activities: result.recordset }))
+                    } else {
+                        res.end(JSON.stringify({ success: false, ErrorCOde: result.returnValue }))
+                    }
+})
+
 //create pracctice 
 router.post('/activity/create/practice', async(req, res, next) => {
     const activity = req.body.activity;
@@ -26,24 +39,24 @@ router.post('/activity/create/practice', async(req, res, next) => {
 //create game 
 
 router.post('/activity/create/game', async(req, res, next) => {
-    const activity = req.body.activity;
+    const activity = req.body;
     const pool = await poolPromise;
     const result = await pool.request()
-                    .input('date', sql.Date,activity.date )
                     .input('location', sql.VarChar(30), activity.location)
-                    .input('startime', sql.Time, activity.startTime)
-                    .input('endtime', sql.Time, activity.endTime)
+                    .input('startime', sql.DateTime, activity.starttime)
+                    .input('endtime', sql.DateTime, activity.endtime)
                     .input('win', sql.Bit, activity.win)
                     .input('CoachID', sql.Int, activity.coachID)
                     .input('TeamID', sql.Int, activity.teamID)
                     .input('score', sql.Int, activity.score)
                     .input('oppName', sql.VarChar(30), activity.oppName)
                     .input('oppScore', sql.Int, activity.oppScore)
+                    .input('name', sql.VarChar(30), activity.name)
                     .execute('createGame');
-                    if (result.returnVal > 0) {
+                    if (result.returnValue == 0) {
                         res.end(JSON.stringify({ success: true, activities: result.recordset }))
                     } else {
-                        res.end(JSON.stringify({ success: false, ErrorCode: result.returnVal}))
+                        res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
                     }
 })
 
