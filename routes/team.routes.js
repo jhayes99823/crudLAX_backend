@@ -14,7 +14,13 @@ router.post('/team/create-team', async(req, res, next) => {
                     .input('schoolname', sql.VarChar(40), team.schoolname)
                     .input('state', sql.Char(2), team.state)
                     .execute('createTeam');
-})
+});
+
+// router.post('/team/update', async(req, res, next) => {
+//     const pool = await poolPromise;
+//     const result = await pool.request()
+//                         .input()
+// });
 
 router.get('/teams', async(req, res, next) => {
     const pool = await poolPromise;
