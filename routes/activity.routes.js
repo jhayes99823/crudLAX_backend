@@ -3,6 +3,18 @@ var router = express.Router();
 
 const { poolPromise, sql } =require('../db')
 
+router.get('/activity', async(req, res, next) => {
+    const pool = await poolPromise;
+    const result = await pool.request()
+                    .input('coachUName', sql.VarChar(30), req.query.username)
+                    .query('SELECT * FROM [dbo].[getActivityByCoachUserName] (@coachUName)')
+                    if (result.recordset.length > 0) {
+                        res.end(JSON.stringify({ success: true, activities: result.recordset }))
+                    } else {
+                        res.end(JSON.stringify({ success: false, Message: 'No Activities' }))
+                    }
+})
+
 //create pracctice 
 router.post('/activity/create/practice', async(req, res, next) => {
     const activity = req.body.activity;
