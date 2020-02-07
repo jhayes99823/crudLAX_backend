@@ -1,14 +1,13 @@
 {
-  "name": "back_end",
+  "name": "crudlax_backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "bcrypt": "3.0.0",
-    "crypt": "^0.0.2",
+    "bcrypt": "^3.0.8",
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "body-parser": "^1.19.0",
     "mssql": "^6.0.1"
   },
   "devDependencies": {},
