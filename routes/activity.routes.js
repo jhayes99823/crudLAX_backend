@@ -8,7 +8,7 @@ router.get('/activity', async(req, res, next) => {
     const result = await pool.request()
                     .input('coachUName', sql.VarChar(30), req.query.username)
                     .query('SELECT * FROM [dbo].[getActivityByCoachUserName] (@coachUName)')
-                    
+
                     if (result.recordset.length > 0) {
                         res.end(JSON.stringify({ success: true, activities: result.recordset }))
                     } else {
@@ -21,10 +21,9 @@ router.post('/activity/create/practice', async(req, res, next) => {
     const activity = req.body.activity;
     const pool = await poolPromise;
     const result = await pool.request()
-                    .input('date', sql.Date,activity.date )
                     .input('location', sql.VarChar(30), activity.location)
-                    .input('startime', sql.Time, activity.startTime)
-                    .input('endtime', sql.Time, activity.endTime)
+                    .input('startime', sql.DateTime, activity.startTime)
+                    .input('endtime', sql.DateTime, activity.endTime)
                     .input('drill', sql.VarChar(30), activity.drill)
                     .input('CoachID', sql.Int, activity.coachID)
                     .input('TeamID', sql.Int, activity.teamID)
@@ -92,17 +91,12 @@ router.delete('/activity/practice', async(req, res, next) => {
     }
 })
 
-//update practice 
-//(@id int, @win varchar(30) = null, @score int=null, @team1 varchar(30)=null, @oppScore int=null)
 router.post('/activity/practice', async(req, res, next) => {
     const pool = await poolPromise;
     console.log(req.query);
     const res2 = await pool.request()
                     .input('id', sql.Int, req.query.id)
-                    .input('win', sql.VarChar(30), req.query.win)
-                    .input('score', sql.Int, req.query.score)
-                    .input('team1', sql.VarChar(30), req.query.team1)
-                    .input('oppScore'.sql.Int, req.query.oppScore)
+                    .input('drill', sql.VarChar(30), req.query.drill)
                     .execute('updatePractice')
     if (res2.returnVal > 0) {
         res.end(JSON.stringify({ success: true }))
@@ -111,9 +105,7 @@ router.post('/activity/practice', async(req, res, next) => {
     }
 })
 
-
-//update activity 
-//@id int, @activityDate date = null,  @location varchar(30)=null, @startTime time=null, @endTime time = null, @CoachID int, @TeamID int, @Name varchar(30) 
+ 
 router.post('/activity/practice', async(req, res, next) => {
     const pool = await poolPromise;
     console.log(req.query);
@@ -152,6 +144,37 @@ router.post('/activity/game', async(req, res, next) => {
         res.end(JSON.stringify({ success: true }))
     } else {
         res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
+    }
+})
+
+router.get('/activity', async(req, res, next) => {
+    const pool = await poolPromise;
+    const res2 = await pool.request()
+    .input('username', sql.VarChar(20), 'reddy')
+    .query('SELECT * FROM [dbo].[getActivityByCoachUserName] (@username)')
+
+    if (res2.recordset.length > 0) {
+        res.end(JSON.stringify({ success: true, result: res2.recordset }));
+
+    } 
+    else {
+        res.end(JSON.stringify({ success: false, message: "Empty" }));
+    }
+})
+
+
+router.get('/activity', async(req, res, next) => {
+    const pool = await poolPromise;
+    const res2 = await pool.request()
+    .input('uname', sql.VarChar(20), req.query.username)
+    .query('SELECT * FROM [dbo].[getGameAndPracticeByPlayerUsername] (@uname)')
+
+    if (res2.recordset.length > 0) {
+        res.end(JSON.stringify({ success: true, result: res2.recordset }));
+
+    } 
+    else {
+        res.end(JSON.stringify({ success: false, message: "Empty" }));
     }
 })
 module.exports = router;
