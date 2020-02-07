@@ -42,7 +42,7 @@ router.get('/users/login', async(req, res, next) => {
             if (result == true) {
                 res.end(JSON.stringify({ success: true, user: res2.recordset }));
             } else {
-                res.end(JSON.stringify({ success: false, result: 'Bad login' }))
+                res.end(JSON.stringify({ success: false, result: 'Incorrect Password' }))
             }
         })
     } else {
