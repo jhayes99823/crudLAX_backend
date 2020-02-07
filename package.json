@@ -4,12 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-<<<<<<< HEAD
     "bcrypt": "^3.0.8",
     "body-parser": "^1.19.0",
-=======
-    "bcrypt": "3.0.0",
->>>>>>> 8c7ce7cbd914e4015fd3d827ce1e8577d59edc26
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mssql": "^6.0.1"
