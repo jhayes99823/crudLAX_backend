@@ -3,24 +3,28 @@ var router = express.Router();
 
 const { poolPromise, sql } =require('../db')
 
-router.post('/team/create-team', async(req, res, next) => {
-    const team = req.body.team;
-    const pool = await poolPromise;
-    const result = await pool.request()
-                    .input('team_name', sql.VarChar(30), team.team_name)
-                    .input('isActive', sql.Bit, team.isActive)
-                    .input('coach_id', sql.Int, team.coach_id)
-                    .input('hometown', sql.VarChar(40), team.hometown)
-                    .input('schoolname', sql.VarChar(40), team.schoolname)
-                    .input('state', sql.Char(2), team.state)
-                    .execute('createTeam');
-});
-
 // router.post('/team/update', async(req, res, next) => {
 //     const pool = await poolPromise;
 //     const result = await pool.request()
 //                         .input()
 // });
+
+/**
+ * 
+ * req.body:
+ *  EMPTY
+ * req.query:
+ *  username
+ * 
+ * DB Call:
+ *  Using GetUserByUsername func and GetTeamsByCoachID
+ * 
+ * RETURNS
+ *  user and teams coached by user if successful
+ *  ERROR:
+ *      User Not Found
+ *      No Teams Assoc w/ Coach
+ */
 
 router.get('/teams', async(req, res, next) => {
     const pool = await poolPromise;
@@ -36,27 +40,64 @@ router.get('/teams', async(req, res, next) => {
         if (res3.recordset.length >= 0) {
             res.end(JSON.stringify({ success: true, user: res2.recordset, teams: res3.recordset }))
         } else {
-            res.end(JSON.stringify({ success: false, message: "Empty" }))
-
+            res.end(JSON.stringify({ success: false, message: "No Teams Associated With Coach" }))
         }
     } 
     else {
-        res.end(JSON.stringify({ success: false, message: "Empty" }));
+        res.end(JSON.stringify({ success: false, message: "User Not Found" }));
     }
 })
 
-router.delete('/teams', async(req, res, next) => {
+/**
+ * 
+ * req.body:
+ *  EMPTY
+ * req.query:
+ *  tid
+ * 
+ * DB Call:
+ *  Using SPROC deleteTeam
+ * 
+ * RETURNS
+ *  0 if successful
+ *  -1 if invalid teamID
+ */
+
+router.delete('/team', async(req, res, next) => {
     const pool = await poolPromise;
     const res2 = await pool.request()
                     .input('tid', sql.Int, req.query.tid)
                     .execute('deleteTeam')
-    if (res2.returnVal > 0) {
+    if (res2.returnVal == 0) {
         res.end(JSON.stringify({ success: true }))
     } else {
-        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal }))
     }
 })
 
+/**
+ * 
+ * req.body:
+ *  TeamName
+ *  CoachID
+ *  Hometown
+ *  SchoolName
+ *  State
+ *  isActive ie can players join team
+ * req.query:
+ *  EMPTY
+ * 
+ * DB Call:
+ *  Using SPROC createTeam
+ * 
+ * RETURNS
+ *   0 if successful
+ *   -1 if coach doesn't exist
+ *   -2 if team exsists
+ *   -3 if coach already on team
+ *   -4 if coach doesn't exist
+ * 
+ */
 router.post('/teams/add', async(req, res, next) => {
     const pool = await poolPromise;
     const res2 = await pool.request()
@@ -68,11 +109,11 @@ router.post('/teams/add', async(req, res, next) => {
                 .input('state', sql.Char(2), req.body.state)
                 .execute('createTeam');
     console.log(res2);
-    if (res2.returnValue >= 0) {
+    if (res2.returnValue == 0) {
         res.end(JSON.stringify({ success: true, user: req.body.coachid}))
         } 
         else {
-            res.end(JSON.stringify({ success: false, message: "Empty" }));
+            res.end(JSON.stringify({ success: false, ErrorCode:res2.returnValue }));
         }
 })
 

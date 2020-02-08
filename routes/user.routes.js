@@ -1,9 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt'); // used to salt, hash, and unhash passwords
+
 
 const { poolPromise, sql } = require('../db')
 
+/**
+ * Used as a test endpoint to make sure DB is working
+ * 
+ */
 router.get('/users', async(req, res, next) => {
     const pool = await poolPromise
     const queryResult = await pool.request()
@@ -16,17 +21,23 @@ router.get('/users', async(req, res, next) => {
     }
 })
 
-router.get('/users', async(req, res, next) => {
-    const pool = await poolPromise
-    const queryResult = await pool.request()
-        .query('SELECT * FROM [UserProfile]')
-    if (queryResult.recordset.length > 0) {
-        res.end(JSON.stringify({ success: true, result: queryResult.recordset }));
-    }
-    else {
-        res.end(JSON.stringify({ success: false, message: "Empty" }));
-    }
-})
+/**
+ * 
+ * req.body:
+ *  EMPTY
+ * req.query:
+ *  username
+ * 
+ * DB Call:
+ *  Using GetUserByUsername
+ *  No response information given from func call besides user
+ * 
+ * RETURNS
+ *  User if successful
+ *  ERROR:
+ *      Password not correct
+ *      User not found
+ */
 
 router.get('/users/login', async(req, res, next) => {
     const user = req.query;
@@ -46,10 +57,32 @@ router.get('/users/login', async(req, res, next) => {
             }
         })
     } else {
-        res.end(JSON.stringify({ success: false, result: 'Empty' }));
+        res.end(JSON.stringify({ success: false, result: 'User not found' }));
     }
 })
 
+/**
+ * 
+ * req.query:
+ *  EMPTY
+ * 
+ * req.body:
+ *  fname
+ *  lname
+ *  username
+ *  password
+ *  role
+ * 
+ * DB Call:
+ *  Hashing password first with bcrypt library
+ *  Using SPROC createCoach and GetUserByUsername Func
+ * 
+ *  RETURNS
+ *      0 and user if successful
+ *      -1 if username already exists
+ *      -2 if role given invalid
+ * 
+ */
 router.post('/users/signup/coach', async(req, res, next) => {
     const user = req.body.user;
     var salt = bcrypt.genSaltSync(10);
@@ -71,10 +104,10 @@ router.post('/users/signup/coach', async(req, res, next) => {
         if (res2.recordset.length > 0) {
             res.end(JSON.stringify({ success: true, result: result.recordset, user: res2.recordset }))
         } else {
-            res.end(JSON.stringify({ success: false, result: "Empty" }))
+            res.end(JSON.stringify({ success: false, result: "Username Not Found" }))
         }
     } else {
-        res.end(JSON.stringify({ success: false, message: "Empty" }));
+        res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }));
     }
 })
 
