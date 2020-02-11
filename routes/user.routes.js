@@ -95,6 +95,7 @@ router.post('/users/signup/coach', async(req, res, next) => {
                     .input('username', sql.VarChar(20), user.username)
                     .input('passhash', sql.VarChar(50), hash)
                     .input('role', sql.Char(1), user.role)
+                    .input('')
                     .execute('createCoach');
 
     if (result.returnValue == 0) {
@@ -112,36 +113,28 @@ router.post('/users/signup/coach', async(req, res, next) => {
 })
 
 router.post('/users/signup/player', async(req, res, next) => {
-    const user = req.body.user;
+    const user = req.body;
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(user.password, salt);
     const pool = await poolPromise;
-    const tid = await pool.request()
-                    .input('TeamName', sql.VarChar(30), user.teamname)
-                    .input('CoachUsername', sql.VarChar(20), user.coachusername)
-                    .execute('getTeamFromCoachAndTeamName');
-    pool.close();
-
-    if (tid.returnValue > 0) {
-        const res2 = await pool.request()
+    const res2 = await pool.request()
+                    .input('fname', sql.VarChar(20), user.fname)
+                    .input('lname', sql.VarChar(20), user.lname)
                     .input('username', sql.VarChar(20), user.username)
-                    .input('FName', sql.VarChar(20), user.fname)
-                    .input('schoolYear', sql.Int, user.schoolyr)
-                    .input('TID', sql.Int, tid)
+                    .input('passhash', sql.VarChar(50), hash)
+                    .input('role', sql.Char(1), user.role)
                     .input('number', sql.Int, user.number)
-                    .input('LName', sql.VarChar(20), user.lname)
-                    .input('PassSalt', sql.VarChar(50), hash)
-                    .execte('insertPlayer');
+                    .input('position', sql.Char(1), user.position)
+                    .input('schoolyear', sql.Int, user.schoolyr)
+                    .input('playable', sql.Bit, user.playable)
+                    .execute('createPlayer');
 
-        
-        if (res2.recordset.length > 0) {
-            res.end(JSON.stringify({ success: true, result: result.recordset, user: res2.recordset }));
-        } else {
-            res.end(JSON.stringify({ success: false, result: "Empty", ErrorCode: res2.returnValue }));
-        }
+    if (res2.returnValue == 0) {
+        res.end(JSON.stringify({ success: true, user: res2.recordset }));
     } else {
-        res.end(JSON.stringify({ success: false, message: "Empty",  ErrorCode: res2.returnValue }));
+        res.end(JSON.stringify({ success: false, result: "Empty", ErrorCode: res2.returnValue }));
     }
+
 })
 
 module.exports = router;
