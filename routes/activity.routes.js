@@ -16,6 +16,31 @@ router.get('/activity', async(req, res, next) => {
                     }
 })
 
+router.get('/activity/team/player', async(req, res, next) => {
+    const pool = await poolPromise;
+    const result = await pool.request()
+                    .input('uname', sql.VarChar(30), req.query.username)
+                    .query('SELECT * FROM [dbo].[getTeamByPlayerUserName] (@uname)')
+                    console.log(result.recordset);
+                    if (result.recordset.length > 0) {
+                        res.end(JSON.stringify({ success: true, activities: result.recordset }))
+                    } else {
+                        res.end(JSON.stringify({ success: false, ErrorCOde: result.returnValue }))
+                    }
+})
+
+router.get('/activity/practice/player', async(req, res, next) => {
+    const pool = await poolPromise;
+    const result = await pool.request()
+                    .input('uname', sql.VarChar(30), req.query.username)
+                    .query('SELECT * FROM [dbo].[getPracticeByPlayerUserName] (@uname)')
+                    console.log(result.recordset);
+                    if (result.recordset.length > 0) {
+                        res.end(JSON.stringify({ success: true, activities: result.recordset }))
+                    } else {
+                        res.end(JSON.stringify({ success: false, ErrorCOde: result.returnValue }))
+                    }
+})
 
 ///api/activity/game/player
 router.get('/activity/game/player', async(req, res, next) => {

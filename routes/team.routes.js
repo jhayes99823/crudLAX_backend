@@ -24,7 +24,7 @@ const { poolPromise, sql } =require('../db')
  *  ERROR:
  *      User Not Found
  *      No Teams Assoc w/ Coach
- */
+ */ //
 
 router.get('/teams', async(req, res, next) => {
     const pool = await poolPromise;
