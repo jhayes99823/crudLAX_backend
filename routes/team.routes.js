@@ -1,13 +1,49 @@
 var express = require('express')
 var router = express.Router();
 
-const { poolPromise, sql } =require('../db')
+const { poolPromise, sql } = require('../db')
 
 // router.post('/team/update', async(req, res, next) => {
 //     const pool = await poolPromise;
 //     const result = await pool.request()
 //                         .input()
 // });
+
+router.get('/team/full-roster', async(req, res, next) => {
+    const pool = await poolPromise;
+    const res2 = await pool.request()
+                            .input('TID', sql.Int, req.query.tid)
+                            .query('SELECT * FROM [dbo].[GetFullTeamListByTeamID] (@TID)')
+    if (res2.recordset.length >= 0) {
+        res.end(JSON.stringify({ success: true, players: res2.recordset }))
+    } else {
+        res.end(JSON.stringify({ success: false, message: 'Invalid TeamID'}))
+    }
+})
+
+router.post('/team/full-roster/add', async(req, res, next) => {
+    const player = req.body.player;
+    const pool = await poolPromise;
+    const res2 = await pool.request()
+                            .input('username', sql.VarChar(30), player.puname)
+                            .query('SELECT * FROM [dbo].[GetUserByUsername] (@username)')
+                            console.log('res2', res2)
+
+    if (res2.recordset.length > 0) {
+        const res3 = await pool.request()
+                                .input('pid', sql.VarChar, res2.recordset[0].ID)
+                                .input('tid', sql.Int, player.tid)
+                                .execute('AddPlayerToTeam')
+        console.log('res3', res3)
+        if (res3.returnValue == 0) {
+            res.end(JSON.stringify({ success: true }))
+        } else {
+            res.end(JSON.stringify({ success: false, ErrorCode: res3.returnValue }))
+        }
+    } else {
+        res.end(JSON.stringify({ success: false, message: 'User Not Found'}))
+    }
+})
 
 /**
  * 
@@ -25,6 +61,7 @@ const { poolPromise, sql } =require('../db')
  *      User Not Found
  *      No Teams Assoc w/ Coach
  */
+
 
 router.get('/teams', async(req, res, next) => {
     const pool = await poolPromise;
