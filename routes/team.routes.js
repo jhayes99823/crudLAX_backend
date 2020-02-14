@@ -168,4 +168,28 @@ router.post('/teams/add', async(req, res, next) => {
         }
 })
 
+router.post('/teams/update', async(req, res, next) => {
+    console.log(req.body);
+    const pool = await poolPromise;
+    const res2 = await pool.request()
+                .input('team_name', sql.VarChar(30), req.body.TeamName)
+                .input('isActive', sql.Bit, req.body.isActive)
+                .input('hometown', sql.VarChar(40), req.body.HomeTown)
+                .input('schoolname', sql.VarChar(40), req.body.SchoolName)
+                .input('state', sql.Char(2), req.body.State)
+                .input('tid', sql.Int, req.body.tid)
+                .input('win', sql.Int, req.body.Wins)
+                .input('loses', sql.Int, req.body.Loses)
+                .input('tie', sql.Int, req.body.Ties)
+                .execute('updateTeam');
+
+    console.log(res2);
+    if (res2.returnValue == 0) {
+        res.end(JSON.stringify({ success: true }))
+        } 
+        else {
+            res.end(JSON.stringify({ success: false, ErrorCode:res2.returnValue }));
+        }
+})
+
 module.exports = router;
