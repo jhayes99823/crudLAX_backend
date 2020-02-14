@@ -10,8 +10,13 @@ router.get('/stat/create-stat', async(req, res, next) => {
     const gameID = await pool.request()
         .input('opponent', sql.VarChar(30), req.query.opponent)
         .input('startTime', sql.DateTime, req.query.startTime)
-        .output('GID', sql.int)
+        .output('gameID', sql.int)
         .execute('getGameByFromOpponent')
+        if (result.returnVal > 0) {
+            res.end(JSON.stringify({ success: true, stats: result.recordset }))
+        } else {
+            res.end(JSON.stringify({ success: false, ErrorCode: result.returnVal}))
+        }
 
 
     // const gameID = await pool.request()
@@ -29,7 +34,7 @@ router.get('/stat/create-stat', async(req, res, next) => {
     // console.log(PID);
     // const result = await pool.request()
     //                 .input('PID', sql.Int, PID.output.PID)
-    //                 .input('GID', sql.Int, gameID.output.GameID)
+    //                 .input('GID', sql.Int, gameID.output.gameID)
     //                 .execute('insertStatForPlayerGame')
     //                 //errorcheck
     
