@@ -17,7 +17,7 @@ router.get('/team/full-roster', async(req, res, next) => {
     if (res2.recordset.length >= 0) {
         res.end(JSON.stringify({ success: true, players: res2.recordset }))
     } else {
-        res.end(JSON.stringify({ success: false, message: 'Invalid TeamID'}))
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }))
     }
 })
 
@@ -27,11 +27,10 @@ router.post('/team/full-roster/add', async(req, res, next) => {
     const res2 = await pool.request()
                             .input('username', sql.VarChar(30), player.puname)
                             .query('SELECT * FROM [dbo].[GetUserByUsername] (@username)')
-                            console.log('res2', res2)
 
     if (res2.recordset.length > 0) {
         const res3 = await pool.request()
-                                .input('pid', sql.VarChar, res2.recordset[0].ID)
+                                .input('pid', sql.Int, res2.recordset[0].ID)
                                 .input('tid', sql.Int, player.tid)
                                 .execute('AddPlayerToTeam')
         console.log('res3', res3)
@@ -41,7 +40,22 @@ router.post('/team/full-roster/add', async(req, res, next) => {
             res.end(JSON.stringify({ success: false, ErrorCode: res3.returnValue }))
         }
     } else {
-        res.end(JSON.stringify({ success: false, message: 'User Not Found'}))
+        res.end(JSON.stringify({ success: false, ErrorCode: -14 }))
+    }
+})
+
+router.delete('/team/full-roster', async(req, res, next) => {
+    console.log(req.query);
+    const pool = await poolPromise;
+    const res2 = await pool.request()
+                    .input('pid', sql.Int, req.query.uid)
+                    .input('tid', sql.Int, req.query.tid)
+                    .execute('DeletePlayerFromTeam');
+    console.log('result', res2);
+    if (res2.returnValue == 0) {
+        res.end(JSON.stringify({ success: true }))
+    } else {
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal }))
     }
 })
 
@@ -77,11 +91,11 @@ router.get('/teams', async(req, res, next) => {
         if (res3.recordset.length >= 0) {
             res.end(JSON.stringify({ success: true, user: res2.recordset, teams: res3.recordset }))
         } else {
-            res.end(JSON.stringify({ success: false, message: "No Teams Associated With Coach" }))
+            res.end(JSON.stringify({ success: false, ErrorCode: res3.returnValue }))
         }
     } 
     else {
-        res.end(JSON.stringify({ success: false, message: "User Not Found" }));
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }));
     }
 })
 
@@ -148,6 +162,30 @@ router.post('/teams/add', async(req, res, next) => {
     console.log(res2);
     if (res2.returnValue == 0) {
         res.end(JSON.stringify({ success: true, user: req.body.coachid}))
+        } 
+        else {
+            res.end(JSON.stringify({ success: false, ErrorCode:res2.returnValue }));
+        }
+})
+
+router.post('/teams/update', async(req, res, next) => {
+    console.log(req.body);
+    const pool = await poolPromise;
+    const res2 = await pool.request()
+                .input('team_name', sql.VarChar(30), req.body.TeamName)
+                .input('isActive', sql.Bit, req.body.isActive)
+                .input('hometown', sql.VarChar(40), req.body.HomeTown)
+                .input('schoolname', sql.VarChar(40), req.body.SchoolName)
+                .input('state', sql.Char(2), req.body.State)
+                .input('tid', sql.Int, req.body.tid)
+                .input('win', sql.Int, req.body.Wins)
+                .input('loses', sql.Int, req.body.Loses)
+                .input('tie', sql.Int, req.body.Ties)
+                .execute('updateTeam');
+
+    console.log(res2);
+    if (res2.returnValue == 0) {
+        res.end(JSON.stringify({ success: true }))
         } 
         else {
             res.end(JSON.stringify({ success: false, ErrorCode:res2.returnValue }));
