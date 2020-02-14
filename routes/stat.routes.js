@@ -8,8 +8,8 @@ router.get('/stat/create-stat', async(req, res, next) => {
     const pool = await poolPromise;
     console.log('parms', req.query);
     const gameID = await pool.request()
-        .input('opponent', sql.VarChar(30))
-        .input('startTime', sql.DateTime)
+        .input('opponent', sql.VarChar(30), req.query.opponent)
+        .input('startTime', sql.DateTime, req.query.startTime)
         .output('GID', sql.int)
         .execute('getGameByFromOpponent')
 
