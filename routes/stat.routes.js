@@ -7,16 +7,11 @@ router.get('/stat/create-stat', async(req, res, next) => {
     // const stat = req.body.stat;
     const pool = await poolPromise;
     console.log('parms', req.query);
-    var ps = new sql.PreparedStatement();
-        ps.input('opponent', sql.VarChar(30))
-        ps.input('startTime', sql.DateTime)
-        ps.prepare('SELECT [dbo].[fn_getGameFromOpponentAndDate] (@opponent, @startTime)', function(err) {
-            //errorchecks
-            ps.execute({opponent: req.query.opponent, startTime: req.query.startTime}, function(err, recordsets) {
-                //errorchecks
-                console.log(recordset[0].value);
-            }
-        }
+    const gameID = await pool.request()
+        .input('opponent', sql.VarChar(30))
+        .input('startTime', sql.DateTime)
+        .output('GID', sql.int)
+        .execute('getGameByFromOpponent')
 
 
     // const gameID = await pool.request()
