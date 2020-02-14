@@ -158,7 +158,7 @@ router.get('/activity', async(req, res, next) => {
 
     } 
     else {
-        res.end(JSON.stringify({ success: false, message: "Empty" }));
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }));
     }
 })
 

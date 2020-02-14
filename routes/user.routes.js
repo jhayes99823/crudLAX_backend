@@ -17,7 +17,7 @@ router.get('/users', async(req, res, next) => {
         res.end(JSON.stringify({ success: true, result: queryResult.recordset }));
     }
     else {
-        res.end(JSON.stringify({ success: false, message: "Empty" }));
+        res.end(JSON.stringify({ success: false, ErrorCode: queryResult.returnValue }));
     }
 })
 
@@ -53,11 +53,11 @@ router.get('/users/login', async(req, res, next) => {
             if (result == true) {
                 res.end(JSON.stringify({ success: true, user: res2.recordset }));
             } else {
-                res.end(JSON.stringify({ success: false, result: 'Incorrect Password' }))
+                res.end(JSON.stringify({ success: false, ErrorCode: -13 }))
             }
         })
     } else {
-        res.end(JSON.stringify({ success: false, result: 'User not found' }));
+        res.end(JSON.stringify({ success: false, ErrorCode: -14 }));
     }
 })
 
@@ -105,7 +105,7 @@ router.post('/users/signup/coach', async(req, res, next) => {
         if (res2.recordset.length > 0) {
             res.end(JSON.stringify({ success: true, result: result.recordset, user: res2.recordset }))
         } else {
-            res.end(JSON.stringify({ success: false, result: "Username Not Found" }))
+            res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
         }
     } else {
         res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }));
