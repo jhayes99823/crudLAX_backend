@@ -95,7 +95,6 @@ router.post('/users/signup/coach', async(req, res, next) => {
                     .input('username', sql.VarChar(20), user.username)
                     .input('passhash', sql.VarChar(50), hash)
                     .input('role', sql.Char(1), user.role)
-                    .input('')
                     .execute('createCoach');
 
     if (result.returnValue == 0) {
