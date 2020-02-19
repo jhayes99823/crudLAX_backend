@@ -11,7 +11,7 @@ router.post('/stat/create', async(req, res, next) => {
         .input('PID', sql.Int, req.body.PID)
         .input('GID', sql.Int, req.body.GID)
         .execute('insertStatForPlayerGame')
-
+        
         console.log(result);
         if (result.returnValue > 0) {
             res.end(JSON.stringify({ success: true, stats: result.recordset }))
@@ -79,6 +79,19 @@ router.post('/stat/create', async(req, res, next) => {
         const result = await pool.request()
                 .input('TID', sql.Int, req.query.TID)
                 .query('SELECT * FROM [dbo].[fn_GetStatsByTID] (@TID)')
+        if (result.recordset.length >= 0) {
+            res.end(JSON.stringify({ success: true, stats: result.recordset }))
+        } else {
+            res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
+        }
+    })
+
+    router.post('/stat/deleteStatForPlayer', async(req, res, next) => {
+        const pool = await poolPromise;    
+        console.log(req.query);
+        const result = await pool.request()
+                .input('PID', sql.Int, req.body.TID)
+                .execute('deleteStatForPlayer')
         if (result.recordset.length >= 0) {
             res.end(JSON.stringify({ success: true, stats: result.recordset }))
         } else {
