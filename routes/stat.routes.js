@@ -11,7 +11,7 @@ router.post('/stat/create', async(req, res, next) => {
         .input('PID', sql.Int, req.body.PID)
         .input('GID', sql.Int, req.body.GID)
         .execute('insertStatForPlayerGame')
-        
+
         console.log(result);
         if (result.returnValue > 0) {
             res.end(JSON.stringify({ success: true, stats: result.recordset }))
@@ -90,7 +90,7 @@ router.post('/stat/create', async(req, res, next) => {
         const pool = await poolPromise;    
         console.log(req.query);
         const result = await pool.request()
-                .input('PID', sql.Int, req.body.TID)
+                .input('PID', sql.Int, req.body.PID)
                 .execute('deleteStatForPlayer')
         if (result.recordset.length >= 0) {
             res.end(JSON.stringify({ success: true, stats: result.recordset }))
