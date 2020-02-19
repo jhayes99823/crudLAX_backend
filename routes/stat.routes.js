@@ -86,7 +86,7 @@ router.post('/stat/create', async(req, res, next) => {
         }
     })
 
-    router.post('/stat/deleteStatForPlayer', async(req, res, next) => {
+    router.delete('/stat/deleteStatForPlayer', async(req, res, next) => {
         const pool = await poolPromise;    
         console.log(req.query);
         const result = await pool.request()
