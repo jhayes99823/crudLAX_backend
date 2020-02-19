@@ -29,17 +29,17 @@ information on the frontend or do whatever you want with it.
 
 ## GET
 ### Similar to the WHERE clause in a SQL statement
-Use res.query <br>
+Use req.query <br>
 Will be something akin to 'localhost:5000/api/user?username=rrogers' <br>
 The above statement is what you want to create on the frontend call
 
 
 ## POST
 ### Similar to INSERT/UPDATE command in SQL statement
-Use res.body
+Use req.body
 The body is kind of a hidden call and isn't visible to user as is by the query params
 
 ## DELETE
 ### Similar to DELETE command in SQL statement
-Use res.query <br>
+Use req.query <br>
 See GET statement above for more info
