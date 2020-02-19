@@ -45,6 +45,20 @@ router.post('/stat/create', async(req, res, next) => {
         }
 
     })
+
+    router.post('/stat/viewstat', async(req, res, next) => {
+        const pool = await poolPromise;    
+        console.log(req.query);
+        const result = await pool.request()
+                .input('PID', sql.Int, req.query.PID)
+                .query('SELECT * FROM [dbo].[fn_GetStatsByPID] (@PID)')
+
+        if (result.recordset.length >= 0) {
+            res.end(JSON.stringify({ success: true, stats: result.recordset }))
+        } else {
+            res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
+        }
+    })
         
     /*
     We need to create a stat for player using game id and player ID
