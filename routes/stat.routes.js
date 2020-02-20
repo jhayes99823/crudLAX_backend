@@ -51,7 +51,7 @@ router.post('/stat/create', async(req, res, next) => {
         console.log(req.query);
         const result = await pool.request()
                 .input('PID', sql.Int, req.query.PID)
-                .query('SELECT * FROM [dbo].[fn_GetStatsByPID] (@PID)')
+                .query('SELECT * FROM [dbo].[fn_getStatsByPID] (@PID)')
         if (result.recordset.length >= 0) {
             res.end(JSON.stringify({ success: true, stats: result.recordset }))
         } else {
@@ -65,7 +65,7 @@ router.post('/stat/create', async(req, res, next) => {
         const result = await pool.request()
                 .input('TID', sql.Int, req.query.TID)
                 .input('GID', sql.Int, req.query.GID)
-                .query('SELECT * FROM [dbo].[fn_GetStatsByGameAndTeam] (@TID, @GID)')
+                .query('SELECT * FROM [dbo].[fn_getStatsByGameAndTeam] (@TID, @GID)')
         if (result.recordset.length >= 0) {
             res.end(JSON.stringify({ success: true, stats: result.recordset }))
         } else {
@@ -78,7 +78,7 @@ router.post('/stat/create', async(req, res, next) => {
         console.log(req.query);
         const result = await pool.request()
                 .input('TID', sql.Int, req.query.TID)
-                .query('SELECT * FROM [dbo].[fn_GetStatsByTID] (@TID)')
+                .query('SELECT * FROM [dbo].[fn_getTeamStatsByTID] (@TID)')
         if (result.recordset.length >= 0) {
             res.end(JSON.stringify({ success: true, stats: result.recordset }))
         } else {
