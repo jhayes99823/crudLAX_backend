@@ -55,7 +55,7 @@ router.delete('/team/full-roster', async(req, res, next) => {
     if (res2.returnValue == 0) {
         res.end(JSON.stringify({ success: true }))
     } else {
-        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal }))
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }))
     }
 })
 
@@ -119,10 +119,10 @@ router.delete('/team', async(req, res, next) => {
     const res2 = await pool.request()
                     .input('tid', sql.Int, req.query.tid)
                     .execute('deleteTeam')
-    if (res2.returnVal == 0) {
+    if (res2.returnValue == 0) {
         res.end(JSON.stringify({ success: true }))
     } else {
-        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal }))
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }))
     }
 })
 

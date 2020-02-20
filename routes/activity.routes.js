@@ -12,8 +12,36 @@ router.get('/activity', async(req, res, next) => {
                     if (result.recordset.length > 0) {
                         res.end(JSON.stringify({ success: true, activities: result.recordset }))
                     } else {
-                        res.end(JSON.stringify({ success: false, ErrorCOde: result.returnValue }))
+                        res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
                     }
+})
+
+router.get('/coach/team/practice', async(req, res, next) => {
+    const pool = await poolPromise;
+    const result = await pool.request()
+                        .input('uname', sql.VarChar(30), req.query.username)
+                        .input('tid', sql.Int, req.query.tid)
+                        .query('SELECT * FROM [dbo].[GetPracticeByCoachUserNameAndTeamID] (@uname, @tid)')
+
+            if (result.recordset.length > 0) {
+                res.end(JSON.stringify({ success: true, practices: result.recordset }))
+            } else {
+                res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
+            }
+})
+
+router.get('/coach/team/game', async(req, res, next) => {
+    const pool = await poolPromise;
+    const result = await pool.request()
+                        .input('uname', sql.VarChar(30), req.query.username)
+                        .input('tid', sql.Int, req.query.tid)
+                        .query('SELECT * FROM [dbo].[GetGameByCoachUserNameAndTeamID] (@uname, @tid)')
+
+            if (result.recordset.length > 0) {
+                res.end(JSON.stringify({ success: true, games: result.recordset }))
+            } else {
+                res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
+            }
 })
 
 
@@ -25,7 +53,7 @@ router.get('/activity/player/profileInfo', async(req, res, next) => {
                     if (result.recordset.length > 0) {
                         res.end(JSON.stringify({ success: true, playerProfileInfo: result.recordset }))
                     } else {
-                        res.end(JSON.stringify({ success: false, ErrorCOde: result.returnValue }))
+                        res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
                     }
 })
 
@@ -100,14 +128,15 @@ router.post('/activity/create/practice', async(req, res, next) => {
                     .input('location', sql.VarChar(30), activity.location)
                     .input('startime', sql.DateTime, activity.startTime)
                     .input('endtime', sql.DateTime, activity.endTime)
-                    .input('drill', sql.VarChar(30), activity.drill)
+                    .input('drill', sql.VarChar(30), activity.drills)
                     .input('CoachID', sql.Int, activity.coachID)
                     .input('TeamID', sql.Int, activity.teamID)
+                    .input('name', sql.VarChar(30), activity.name)
                     .execute('createPractice');
-                    if (result.returnVal > 0) {
+                    if (result.returnValue == 0) {
                         res.end(JSON.stringify({ success: true, activities: result.recordset }))
                     } else {
-                        res.end(JSON.stringify({ success: false, ErrorCode: result.returnVal}))
+                        res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
                     }
 })
 
@@ -144,10 +173,10 @@ router.delete('/activity/game', async(req, res, next) => {
                     .input('CoachID', sql.Int, req.query.cid)
                     .input('TeamID', sql.Int, req.query.tid)
                     .execute('deleteGame')
-    if (res2.returnVal > 0) {
+    if (res2.returnValue == 0) {
         res.end(JSON.stringify({ success: true }))
     } else {
-        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }))
     }
 })
 
@@ -160,10 +189,10 @@ router.delete('/activity/practice', async(req, res, next) => {
                     .input('CoachID', sql.Int, req.query.cid)
                     .input('TeamID', sql.Int, req.query.tid)
                     .execute('deletePractice')
-    if (res2.returnVal > 0) {
+    if (res2.returnValue == 0) {
         res.end(JSON.stringify({ success: true }))
     } else {
-        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }))
     }
 })
 
@@ -174,10 +203,10 @@ router.post('/activity/practice', async(req, res, next) => {
                     .input('id', sql.Int, req.body.id)
                     .input('drill', sql.VarChar(30), req.body.drill)
                     .execute('updatePractice')
-    if (res2.returnVal > 0) {
+    if (res2.returnValue == 0) {
         res.end(JSON.stringify({ success: true }))
     } else {
-        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }))
     }
 })
 
@@ -195,10 +224,10 @@ router.post('/activity/practice', async(req, res, next) => {
                     .input('TeamID'.sql.Int, req.body.TeamID)
                     .input('Name', sql.VarChar(30), req.body.name)
                     .execute('updateActivity')
-    if (res2.returnVal > 0) {
+    if (res2.returnValue == 0) {
         res.end(JSON.stringify({ success: true }))
     } else {
-        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }))
     }
 })
 
@@ -213,44 +242,16 @@ router.post('/activity/game', async(req, res, next) => {
                     .input('id', sql.Int, req.body.id)
                     .input('win', sql.VarChar(30), req.body.win)
                     .input('score', sql.Int, req.body.score)
-                    .input('team1', sql.VarChar(30), req.body.VarChar(30)
+                    .input('team1', sql.VarChar(30), req.body.VarChar(30))
                     .input('oppScore', sql.Int, req.body.oppScore)
-                    .execute('updateGame'))
-    if (res2.returnVal > 0) {
+                    .execute('updateGame')
+                    
+    if (res2.returnValue == 0) {
         res.end(JSON.stringify({ success: true }))
     } else {
-        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnVal}))
-    }
-})
-
-router.get('/activity', async(req, res, next) => {
-    const pool = await poolPromise;
-    const res2 = await pool.request()
-    .input('username', sql.VarChar(20), 'reddy')
-    .query('SELECT * FROM [dbo].[getActivityByCoachUserName] (@username)')
-
-    if (res2.recordset.length > 0) {
-        res.end(JSON.stringify({ success: true, result: res2.recordset }));
-
-    } 
-    else {
-        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }));
+        res.end(JSON.stringify({ success: false, ErrorCode: res2.returnValue }))
     }
 })
 
 
-router.get('/activity', async(req, res, next) => {
-    const pool = await poolPromise;
-    const res2 = await pool.request()
-    .input('uname', sql.VarChar(20), req.query.username)
-    .query('SELECT * FROM [dbo].[getGameAndPracticeByPlayerUsername] (@uname)')
-
-    if (res2.recordset.length > 0) {
-        res.end(JSON.stringify({ success: true, result: res2.recordset }));
-
-    } 
-    else {
-        res.end(JSON.stringify({ success: false, message: "Empty" }));
-    }
-})
 module.exports = router;
