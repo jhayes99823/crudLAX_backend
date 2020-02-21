@@ -140,7 +140,7 @@ router.post('/activity/create/practice', async(req, res, next) => {
                     }
 })
 
-//create game 
+//create game procedure 
 
 router.post('/activity/create/game', async(req, res, next) => {
     const activity = req.body;
