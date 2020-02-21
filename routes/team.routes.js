@@ -27,7 +27,6 @@ router.post('/team/full-roster/add', async(req, res, next) => {
     const res2 = await pool.request()
                             .input('username', sql.VarChar(30), player.puname)
                             .query('SELECT * FROM [dbo].[GetUserByUsername] (@username)')
-
     if (res2.recordset.length > 0) {
         const res3 = await pool.request()
                                 .input('pid', sql.Int, res2.recordset[0].ID)
@@ -40,7 +39,7 @@ router.post('/team/full-roster/add', async(req, res, next) => {
             res.end(JSON.stringify({ success: false, ErrorCode: res3.returnValue }))
         }
     } else {
-        res.end(JSON.stringify({ success: false, ErrorCode: -14 }))
+        res.end(JSON.stringify({ success: false, ErrorCode: -1 }))
     }
 })
 
@@ -150,6 +149,7 @@ router.delete('/team', async(req, res, next) => {
  * 
  */
 router.post('/teams/add', async(req, res, next) => {
+    console.log('getting to here')
     const pool = await poolPromise;
     const res2 = await pool.request()
                 .input('team_name', sql.VarChar(30), req.body.teamname)
