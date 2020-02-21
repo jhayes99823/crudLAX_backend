@@ -8,8 +8,17 @@ router.post('/stat/create', async(req, res, next) => {
     const pool = await poolPromise;
     console.log('parms', req.query);
     const result = await pool.request()
+        .input('forcedTurnover', sql.Int, req.body.forcedTurnover)
+        .input('goals', sql.Int, req.body.goals)
+        .input('faceoffSuccess', sql.Decimal(5,2), req.body.faceOffSuccess)
+        .input('totalFaceoff', sql.Decimal(5,2), req.body.totalFaceoff)
+        .input('assists', sql.Int, req.body.assists)
+        .input('passSuccess', sql.Decimal(5,2), req.body.passSuccess)
+        .input('totalPass', sql.Decimal(5,2), req.body.totalPass)
+        .input('groundBall', sql.Int, req.body.groundBall)
+        .input('saves', sql.Int, req.body.saves)
         .input('PID', sql.Int, req.body.PID)
-        .input('GID', sql.Int, req.body.GID)
+        .input('GID', sql.Int, req.body.GameID)
         .execute('insertStatForPlayerGame')
 
         console.log(result);
