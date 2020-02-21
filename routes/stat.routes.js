@@ -22,7 +22,7 @@ const { poolPromise, sql } =require('../db')
             .execute('insertStatForPlayerGame')
 
             console.log(result);
-            if (result.returnValue > 0) {
+            if (result.returnValue == 0) {
                 res.end(JSON.stringify({ success: true, stats: result.recordset }))
             } else {
                 res.end(JSON.stringify({ success: false, ErrorCode: result.returnValue }))
@@ -75,6 +75,7 @@ const { poolPromise, sql } =require('../db')
                 .input('TID', sql.Int, req.query.TID)
                 .input('GID', sql.Int, req.query.GID)
                 .query('SELECT * FROM [dbo].[fn_getStatsByGameAndTeam] (@TID, @GID)')
+            
         if (result.recordset.length >= 0) {
             res.end(JSON.stringify({ success: true, stats: result.recordset }))
         } else {
