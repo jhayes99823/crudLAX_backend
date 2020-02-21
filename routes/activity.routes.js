@@ -102,14 +102,14 @@ router.get('/activity/game/player', async(req, res, next) => {
 router.post('/activity/player/profile', async(req, res, next) => {
     const pool = await poolPromise;   
     const result = await pool.request()
-            .input('uname', sql.VarChar(30), req.body.UserName)
-            .input('fname', sql.VarChar(30), req.body.FirstName)
-            .input('lname', sql.VarChar(30), req.body.LastName)
+            .input('uname', sql.VarChar(20), req.body.UserName)
+            .input('fname', sql.VarChar(20), req.body.FirstName)
+            .input('lname', sql.VarChar(20), req.body.LastName)
             .input('number', sql.Int, req.body.Number)
             .input('position', sql.Char(1),req.body.Position)
-            .input('school', sql.VarChar(40), req.body.SchoolYear)
+            .input('school', sql.Int, req.body.SchoolYear)
             .input('playable', sql.Bit, req.body.Playable)
-            .execute('updatePlayerData')
+            .execute('updatePlayerInfo'); 
     if (result.returnValue == 0) {
     res.end(JSON.stringify({ success: true }))
     } else {
